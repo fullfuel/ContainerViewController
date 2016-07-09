@@ -15,19 +15,22 @@
 @property (nonatomic, weak) id<SlideContainerControllerDelegate> delegate;
 
 - (instancetype)initWithViewControllers:(NSArray *)viewControllers;
-- (void)configSelectedIndex:(NSUInteger)index;
+- (void)configSelectedIndex:(NSUInteger)index animated:(BOOL)animated;
 - (UIViewController *)viewControllerAtIndex:(NSUInteger)index;
+- (void)configControllerSlideEnable:(BOOL)enable;
+
+
 - (void)presentSimpleModalViewController:(UIViewController *)viewControllerToPresent
                                 animated:(BOOL)animated;
 - (void)dismissSimpleModalViewControllerAnimated:(BOOL)animated;
-- (void)setControllerSlideEnable:(BOOL)enable;
 
 @end
 
 
 @protocol SlideContainerControllerDelegate <NSObject>
-@optional
-- (void)slideContainerController:(SlideContainerController *)slideContainerController didSelectViewController:(UIViewController *)viewController;
+@required
+- (void)slideContainerController:(SlideContainerController *)slideContainerController willSelectViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController;
+- (void)slideContainerController:(SlideContainerController *)slideContainerController didSelectViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController;
 @end
 
 //@interface UIViewController (UITabBarControllerItem)

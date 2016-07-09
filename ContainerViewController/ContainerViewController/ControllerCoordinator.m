@@ -31,9 +31,9 @@ static ControllerCoordinator *coordinator;
     return coordinator;
 }
 
-- (void)configSelectedIndex:(NSUInteger)index
+- (void)configSelectedIndex:(NSUInteger)index animated:(BOOL)animated
 {
-    [self.controller configSelectedIndex:index];
+    [self.controller configSelectedIndex:index animated:animated];
 }
 
 - (UIViewController *)viewControllerAtIndex:(NSUInteger)index
@@ -41,10 +41,10 @@ static ControllerCoordinator *coordinator;
     return [self.controller viewControllerAtIndex:index];
 }
 
-- (void)setControllerSlideEnable:(BOOL)enable
+- (void)configControllerSlideEnable:(BOOL)enable
 {
     if (self.controller) {
-        [self.controller setControllerSlideEnable:enable];
+        [self.controller configControllerSlideEnable:enable];
     }
 }
 

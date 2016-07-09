@@ -31,7 +31,7 @@
     UIViewController *vc = [[UIViewController alloc] init];
     vc.view.backgroundColor = [UIColor grayColor];
     
-    [[ControllerCoordinator shareInstance] configSelectedIndex:0];
+    [[ControllerCoordinator shareInstance] configSelectedIndex:0 animated:YES];
     UINavigationController *nav = (UINavigationController *)[[ControllerCoordinator shareInstance] viewControllerAtIndex:0];
     [nav pushViewController:vc animated:NO];
 }

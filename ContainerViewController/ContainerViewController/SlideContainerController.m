@@ -76,7 +76,6 @@ typedef enum : NSUInteger {
     self.scrollView.delegate = self;
     [self.view addSubview:self.scrollView];
     
-    
     for (int i= 0; i<viewControllers.count; i++) {
         UIViewController *controller = [viewControllers objectAtIndex:i];
         
@@ -105,16 +104,30 @@ typedef enum : NSUInteger {
     self.directionToLeft = NO;
 }
 
-- (void)configSelectedIndex:(NSUInteger)index
+- (void)configSelectedIndex:(NSUInteger)index animated:(BOOL)animated
 {
     if (index < self.viewControllers.count) {
-        self.selectedIndex = index;
-        [self.scrollView setContentOffset:CGPointMake(index * CGRectGetWidth(self.view.bounds), 0) animated:YES];
+        
+        if (animated) {
+            // animated == YES 时，最终会调用UIScrollView的代理方法 scrollViewDidEndScrollingAnimation:
+            
+            [self.scrollView setContentOffset:CGPointMake(index * CGRectGetWidth(self.view.bounds), 0) animated:animated];
+            
+        } else {
+            // animated == NO 时，最终不会调用UIScrollView的代理方法 scrollViewDidEndScrollingAnimation:
+            
+            if (self.delegate && [self.delegate respondsToSelector:@selector(slideContainerController:willSelectViewController:fromViewController:)] && [self.delegate respondsToSelector:@selector(slideContainerController:didSelectViewController:fromViewController:)]) {
+                UINavigationController *fromNav = [self.viewControllers objectAtIndex:self.selectedIndex];
+                UINavigationController *toNav = [self.viewControllers objectAtIndex:index];
+                [self.delegate slideContainerController:self willSelectViewController:toNav fromViewController:fromNav];
+                [self.scrollView setContentOffset:CGPointMake(index * CGRectGetWidth(self.view.bounds), 0) animated:animated];
+                [self.delegate slideContainerController:self didSelectViewController:toNav fromViewController:fromNav];
+                
+                // 赋值本次滑动最终停留的选中控制器位置
+                self.selectedIndex = index;
+            }
+        }
     }
-}
-- (void)setControllerSlideEnable:(BOOL)enable
-{
-    self.scrollView.scrollEnabled = enable;
 }
 
 - (UIViewController *)viewControllerAtIndex:(NSUInteger)index
@@ -124,6 +137,11 @@ typedef enum : NSUInteger {
         viewController = [self.viewControllers objectAtIndex:index];
     }
     return viewController;
+}
+
+- (void)configControllerSlideEnable:(BOOL)enable
+{
+    self.scrollView.scrollEnabled = enable;
 }
 
 - (void)presentSimpleModalViewController:(UIViewController *)viewControllerToPresent
@@ -512,6 +530,18 @@ typedef enum : NSUInteger {
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
     NSLog(@"%s", __func__);
+    
+    // 本次滑动停留的控制器位置
+    NSInteger index = scrollView.contentOffset.x / CGRectGetWidth(self.view.bounds);
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(slideContainerController:didSelectViewController:fromViewController:)]) {
+        UINavigationController *fromNav = [self.viewControllers objectAtIndex:self.selectedIndex];
+        UINavigationController *toNav = [self.viewControllers objectAtIndex:index];
+        [self.delegate slideContainerController:self didSelectViewController:toNav fromViewController:fromNav];
+    }
+    
+    // 赋值本次滑动最终停留的选中控制器位置
+    self.selectedIndex = index;
 }
 
 // return a view that will be scaled. if delegate returns nil, nothing happens

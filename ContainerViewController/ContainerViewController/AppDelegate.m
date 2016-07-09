@@ -15,7 +15,7 @@
 #import "ControllerCoordinator.h"
 
 
-@interface AppDelegate () <UINavigationControllerDelegate>
+@interface AppDelegate () <UINavigationControllerDelegate, SlideContainerControllerDelegate>
 
 @end
 
@@ -24,10 +24,20 @@
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
     if (navigationController.viewControllers.count == 1) {
-        [[ControllerCoordinator shareInstance] setControllerSlideEnable:YES];
+        [[ControllerCoordinator shareInstance] configControllerSlideEnable:YES];
     } else {
-        [[ControllerCoordinator shareInstance] setControllerSlideEnable:NO];
+        [[ControllerCoordinator shareInstance] configControllerSlideEnable:NO];
     }
+}
+
+- (void)slideContainerController:(SlideContainerController *)slideContainerController willSelectViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController
+{
+    NSLog(@"将要从 %@ 到 %@", NSStringFromClass([fromViewController class]), NSStringFromClass([toViewController class]));
+}
+
+- (void)slideContainerController:(SlideContainerController *)slideContainerController didSelectViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController
+{
+    NSLog(@"已经从 %@ 到 %@", NSStringFromClass([fromViewController class]), NSStringFromClass([toViewController class]));
 }
 
 
@@ -56,6 +66,7 @@
     nav4.delegate = self;
     
     SlideContainerController *controller = [[SlideContainerController alloc] initWithViewControllers:@[nav1, nav2, nav3, nav4]];
+    controller.delegate = self;
     
     self.window.rootViewController = controller;
     

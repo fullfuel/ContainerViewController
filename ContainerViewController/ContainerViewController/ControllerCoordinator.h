@@ -13,10 +13,10 @@
 
 + (ControllerCoordinator *)shareInstance;
 
-- (void)configSelectedIndex:(NSUInteger)index;
+- (void)configSelectedIndex:(NSUInteger)index animated:(BOOL)animated;
 
 - (UIViewController *)viewControllerAtIndex:(NSUInteger)index;
 
-- (void)setControllerSlideEnable:(BOOL)enable;
+- (void)configControllerSlideEnable:(BOOL)enable;
 
 @end
